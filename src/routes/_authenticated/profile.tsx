@@ -43,7 +43,10 @@ function ProfilePage() {
       .update({ full_name: fullName, phone: phone || null, address: address || null })
       .eq("id", user.id);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     await refreshProfile();
     toast.success("Profile updated");
   };

@@ -66,9 +66,17 @@ function ComplaintDetail() {
   const mutate = useMutation({
     mutationFn: async () => {
       if (!complaint || !nextStatus || !user) return;
-      const patch: Record<string, unknown> = { status: nextStatus };
-      if (note) patch[nextStatus === "completed" ? "resolution_notes" : "admin_notes"] = note;
-      if (nextStatus === "completed") patch["resolved_at"] = new Date().toISOString();
+      const patch: {
+        status: ComplaintStatus;
+        admin_notes?: string;
+        resolution_notes?: string;
+        resolved_at?: string;
+      } = { status: nextStatus };
+      if (note) {
+        if (nextStatus === "completed") patch.resolution_notes = note;
+        else patch.admin_notes = note;
+      }
+      if (nextStatus === "completed") patch.resolved_at = new Date().toISOString();
 
       const { error } = await supabase.from("complaints").update(patch).eq("id", complaint.id);
       if (error) throw error;
