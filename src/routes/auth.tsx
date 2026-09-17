@@ -56,7 +56,10 @@ function AuthPage() {
       },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     if (data.session) navigate({ to: "/dashboard", replace: true });
     else toast.success("Check your email to confirm your account.");
   };

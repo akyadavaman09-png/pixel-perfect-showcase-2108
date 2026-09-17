@@ -66,7 +66,7 @@ export function AppShell({
   const { role, profile, user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const items = NAV[role ?? "citizen"] ?? NAV.citizen;
+  const items: NavItem[] = NAV[role ?? "citizen"] ?? NAV["citizen"] ?? [];
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-1 p-3">
