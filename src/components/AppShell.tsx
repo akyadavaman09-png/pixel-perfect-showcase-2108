@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Building2,
+  ClipboardCheck,
   FileBarChart,
   FilePlus2,
   LayoutDashboard,
@@ -37,6 +38,7 @@ const NAV: Record<string, NavItem[]> = {
   ],
   admin: [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/verify", label: "Verify Complaints", icon: ClipboardCheck },
     { to: "/complaints", label: "All Complaints", icon: ListChecks },
     { to: "/departments", label: "Departments", icon: Building2 },
     { to: "/users", label: "Users", icon: Users },
