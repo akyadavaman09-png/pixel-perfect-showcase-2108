@@ -20,6 +20,7 @@ import { Route as AuthenticatedReportRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
+import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
 import { Route as AuthenticatedComplaintsIndexRouteImport } from './routes/_authenticated/complaints/index'
 import { Route as AuthenticatedComplaintsIdRouteImport } from './routes/_authenticated/complaints/$id'
 
@@ -78,6 +79,11 @@ const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedComplaintsIndexRoute =
   AuthenticatedComplaintsIndexRouteImport.update({
     id: '/complaints/',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/users': typeof AuthenticatedUsersRoute
+  '/verify': typeof AuthenticatedVerifyRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
   '/complaints/': typeof AuthenticatedComplaintsIndexRoute
 }
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/users': typeof AuthenticatedUsersRoute
+  '/verify': typeof AuthenticatedVerifyRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
   '/complaints': typeof AuthenticatedComplaintsIndexRoute
 }
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
+  '/_authenticated/verify': typeof AuthenticatedVerifyRoute
   '/_authenticated/complaints/$id': typeof AuthenticatedComplaintsIdRoute
   '/_authenticated/complaints/': typeof AuthenticatedComplaintsIndexRoute
 }
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/users'
+    | '/verify'
     | '/complaints/$id'
     | '/complaints/'
   fileRoutesByTo: FileRoutesByTo
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/users'
+    | '/verify'
     | '/complaints/$id'
     | '/complaints'
   id:
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/settings'
     | '/_authenticated/users'
+    | '/_authenticated/verify'
     | '/_authenticated/complaints/$id'
     | '/_authenticated/complaints/'
   fileRoutesById: FileRoutesById
@@ -266,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/verify': {
+      id: '/_authenticated/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof AuthenticatedVerifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/complaints/': {
       id: '/_authenticated/complaints/'
       path: '/complaints'
@@ -292,6 +311,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
+  AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
   AuthenticatedComplaintsIdRoute: typeof AuthenticatedComplaintsIdRoute
   AuthenticatedComplaintsIndexRoute: typeof AuthenticatedComplaintsIndexRoute
 }
@@ -305,6 +325,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
+  AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
   AuthenticatedComplaintsIdRoute: AuthenticatedComplaintsIdRoute,
   AuthenticatedComplaintsIndexRoute: AuthenticatedComplaintsIndexRoute,
 }
