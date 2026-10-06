@@ -41,6 +41,7 @@ function ReportPage() {
   const [category, setCategory] = useState<ComplaintCategory | "">("");
   const [description, setDescription] = useState("");
   const [locationText, setLocationText] = useState("");
+  const [ward, setWard] = useState("");
   const [point, setPoint] = useState<{ lat: number; lng: number } | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -61,6 +62,7 @@ function ReportPage() {
           category,
           description,
           location_text: locationText || null,
+          ward: ward.trim() || null,
           latitude: point?.lat ?? null,
           longitude: point?.lng ?? null,
           image_url: imagePath,
@@ -135,6 +137,16 @@ function ReportPage() {
               placeholder="Main Street, near City Library"
               value={locationText}
               onChange={(e) => setLocationText(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="ward">Ward (optional)</Label>
+            <Input
+              id="ward"
+              placeholder="Ward 12"
+              value={ward}
+              onChange={(e) => setWard(e.target.value)}
             />
           </div>
 

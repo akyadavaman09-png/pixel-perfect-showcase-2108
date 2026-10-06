@@ -56,6 +56,7 @@ export interface Complaint {
   longitude: number | null;
   image_url: string | null;
   department_id: string | null;
+  ward: string | null;
   assigned_staff_id: string | null;
   status: ComplaintStatus;
   admin_notes: string | null;
