@@ -151,7 +151,7 @@ function VerifyQueue() {
         </div>
       ) : complaints.length === 0 ? (
         <EmptyState
-          icon={<ClipboardCheck className="size-8" aria-hidden />}
+          icon={ClipboardCheck}
           title="Queue is clear"
           description="There are no complaints waiting in this view right now."
         />
