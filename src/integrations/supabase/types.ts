@@ -76,6 +76,7 @@ export type Database = {
           status: Database["public"]["Enums"]["complaint_status"]
           title: string
           updated_at: string
+          ward: string | null
         }
         Insert: {
           admin_notes?: string | null
@@ -97,6 +98,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["complaint_status"]
           title: string
           updated_at?: string
+          ward?: string | null
         }
         Update: {
           admin_notes?: string | null
@@ -118,6 +120,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["complaint_status"]
           title?: string
           updated_at?: string
+          ward?: string | null
         }
         Relationships: [
           {
