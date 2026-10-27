@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDepartmentsRouteImport } from './routes/_authenticated/departments'
 import { Route as AuthenticatedMapRouteImport } from './routes/_authenticated/map'
@@ -21,6 +22,10 @@ import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
+import { Route as AuthenticatedAdminCrewsRouteImport } from './routes/_authenticated/admin/crews'
+import { Route as AuthenticatedAdminQueueRouteImport } from './routes/_authenticated/admin/queue'
 import { Route as AuthenticatedComplaintsIndexRouteImport } from './routes/_authenticated/complaints/index'
 import { Route as AuthenticatedComplaintsIdRouteImport } from './routes/_authenticated/complaints/$id'
 
@@ -37,6 +42,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -84,6 +94,27 @@ const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminAnalyticsRoute =
+  AuthenticatedAdminAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminCrewsRoute = AuthenticatedAdminCrewsRouteImport.update({
+  id: '/crews',
+  path: '/crews',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminQueueRoute = AuthenticatedAdminQueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedComplaintsIndexRoute =
   AuthenticatedComplaintsIndexRouteImport.update({
     id: '/complaints/',
@@ -100,6 +131,7 @@ const AuthenticatedComplaintsIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/departments': typeof AuthenticatedDepartmentsRoute
   '/map': typeof AuthenticatedMapRoute
@@ -109,7 +141,11 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/users': typeof AuthenticatedUsersRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/crews': typeof AuthenticatedAdminCrewsRoute
+  '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/complaints/': typeof AuthenticatedComplaintsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -124,7 +160,11 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/users': typeof AuthenticatedUsersRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/admin/crews': typeof AuthenticatedAdminCrewsRoute
+  '/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/complaints': typeof AuthenticatedComplaintsIndexRoute
 }
 export interface FileRoutesById {
@@ -132,6 +172,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/departments': typeof AuthenticatedDepartmentsRoute
   '/_authenticated/map': typeof AuthenticatedMapRoute
@@ -141,7 +182,11 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
+  '/_authenticated/admin/crews': typeof AuthenticatedAdminCrewsRoute
+  '/_authenticated/admin/queue': typeof AuthenticatedAdminQueueRoute
   '/_authenticated/complaints/$id': typeof AuthenticatedComplaintsIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/complaints/': typeof AuthenticatedComplaintsIndexRoute
 }
 export interface FileRouteTypes {
@@ -149,6 +194,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin'
     | '/dashboard'
     | '/departments'
     | '/map'
@@ -158,7 +204,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/users'
     | '/verify'
+    | '/admin/analytics'
+    | '/admin/crews'
+    | '/admin/queue'
     | '/complaints/$id'
+    | '/admin/'
     | '/complaints/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -173,13 +223,18 @@ export interface FileRouteTypes {
     | '/settings'
     | '/users'
     | '/verify'
+    | '/admin/analytics'
+    | '/admin/crews'
+    | '/admin/queue'
     | '/complaints/$id'
+    | '/admin'
     | '/complaints'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/departments'
     | '/_authenticated/map'
@@ -189,7 +244,11 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/users'
     | '/_authenticated/verify'
+    | '/_authenticated/admin/analytics'
+    | '/_authenticated/admin/crews'
+    | '/_authenticated/admin/queue'
     | '/_authenticated/complaints/$id'
+    | '/_authenticated/admin/'
     | '/_authenticated/complaints/'
   fileRoutesById: FileRoutesById
 }
@@ -221,6 +280,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -285,6 +351,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/analytics': {
+      id: '/_authenticated/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/crews': {
+      id: '/_authenticated/admin/crews'
+      path: '/crews'
+      fullPath: '/admin/crews'
+      preLoaderRoute: typeof AuthenticatedAdminCrewsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/queue': {
+      id: '/_authenticated/admin/queue'
+      path: '/queue'
+      fullPath: '/admin/queue'
+      preLoaderRoute: typeof AuthenticatedAdminQueueRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/complaints/': {
       id: '/_authenticated/complaints/'
       path: '/complaints'
@@ -302,7 +396,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
+  AuthenticatedAdminCrewsRoute: typeof AuthenticatedAdminCrewsRoute
+  AuthenticatedAdminQueueRoute: typeof AuthenticatedAdminQueueRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
+    AuthenticatedAdminCrewsRoute: AuthenticatedAdminCrewsRoute,
+    AuthenticatedAdminQueueRoute: AuthenticatedAdminQueueRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDepartmentsRoute: typeof AuthenticatedDepartmentsRoute
   AuthenticatedMapRoute: typeof AuthenticatedMapRoute
@@ -317,6 +432,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDepartmentsRoute: AuthenticatedDepartmentsRoute,
   AuthenticatedMapRoute: AuthenticatedMapRoute,
