@@ -19,6 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { ViewSwitcher } from "@/components/ViewSwitcher";
+import { useViewMode } from "@/hooks/useViewMode";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard };
 
@@ -31,12 +33,14 @@ const NAV: Record<string, NavItem[]> = {
     { to: "/profile", label: "Profile", icon: UserIcon },
   ],
   staff: [
+    { to: "/admin", label: "Admin Console", icon: ShieldCheck },
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/complaints", label: "Assigned Complaints", icon: ListChecks },
     { to: "/map", label: "City Map", icon: MapIcon },
     { to: "/profile", label: "Profile", icon: UserIcon },
   ],
   admin: [
+    { to: "/admin", label: "Admin Console", icon: ShieldCheck },
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/verify", label: "Verify Complaints", icon: ClipboardCheck },
     { to: "/complaints", label: "All Complaints", icon: ListChecks },
@@ -68,7 +72,9 @@ export function AppShell({
   const { role, profile, user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const items: NavItem[] = NAV[role ?? "citizen"] ?? NAV["citizen"] ?? [];
+  const { mode } = useViewMode();
+  const navRole = mode === "citizen" ? "citizen" : (role ?? "citizen");
+  const items: NavItem[] = NAV[navRole] ?? NAV["citizen"] ?? [];
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-1 p-3">
@@ -158,7 +164,7 @@ export function AppShell({
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-border bg-card/95 px-4 py-3 backdroprop-blur lg:px-6">
+        <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-border bg-card/95 px-4 py-3 backdrop-blur lg:px-6">
           <Button
             variant="ghost"
             size="icon"
@@ -175,6 +181,7 @@ export function AppShell({
             ) : null}
           </div>
           {actions}
+          <ViewSwitcher />
         </header>
         <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
