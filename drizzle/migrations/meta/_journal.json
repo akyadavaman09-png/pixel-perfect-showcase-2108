@@ -8,6 +8,13 @@
       "when": 1791271318910,
       "tag": "0000_add_complaint_ward",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793154807495,
+      "tag": "0001_smartcity_worker_workflow_upgrade",
+      "breakpoints": true
     }
   ]
 }
