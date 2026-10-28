@@ -14,6 +14,76 @@ export type Database = {
   }
   public: {
     Tables: {
+      complaint_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          complaint_id: string
+          id: string
+          note: string | null
+          worker_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          complaint_id: string
+          id?: string
+          note?: string | null
+          worker_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          complaint_id?: string
+          id?: string
+          note?: string | null
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaint_assignments_complaint_id_fkey"
+            columns: ["complaint_id"]
+            isOneToOne: false
+            referencedRelation: "complaints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      complaint_attachments: {
+        Row: {
+          complaint_id: string
+          created_at: string
+          id: string
+          kind: string
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          complaint_id: string
+          created_at?: string
+          id?: string
+          kind?: string
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          complaint_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaint_attachments_complaint_id_fkey"
+            columns: ["complaint_id"]
+            isOneToOne: false
+            referencedRelation: "complaints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       complaint_updates: {
         Row: {
           actor_id: string | null
@@ -24,6 +94,7 @@ export type Database = {
           image_url: string | null
           note: string | null
           to_status: Database["public"]["Enums"]["complaint_status"] | null
+          visibility: string
         }
         Insert: {
           actor_id?: string | null
@@ -34,6 +105,7 @@ export type Database = {
           image_url?: string | null
           note?: string | null
           to_status?: Database["public"]["Enums"]["complaint_status"] | null
+          visibility?: string
         }
         Update: {
           actor_id?: string | null
@@ -44,6 +116,7 @@ export type Database = {
           image_url?: string | null
           note?: string | null
           to_status?: Database["public"]["Enums"]["complaint_status"] | null
+          visibility?: string
         }
         Relationships: [
           {
@@ -65,11 +138,13 @@ export type Database = {
           created_at: string
           department_id: string | null
           description: string
+          due_date: string | null
           id: string
           image_url: string | null
           latitude: number | null
           location_text: string | null
           longitude: number | null
+          priority: Database["public"]["Enums"]["complaint_priority"]
           resolution_image_url: string | null
           resolution_notes: string | null
           resolved_at: string | null
@@ -87,11 +162,13 @@ export type Database = {
           created_at?: string
           department_id?: string | null
           description: string
+          due_date?: string | null
           id?: string
           image_url?: string | null
           latitude?: number | null
           location_text?: string | null
           longitude?: number | null
+          priority?: Database["public"]["Enums"]["complaint_priority"]
           resolution_image_url?: string | null
           resolution_notes?: string | null
           resolved_at?: string | null
@@ -109,11 +186,13 @@ export type Database = {
           created_at?: string
           department_id?: string | null
           description?: string
+          due_date?: string | null
           id?: string
           image_url?: string | null
           latitude?: number | null
           location_text?: string | null
           longitude?: number | null
+          priority?: Database["public"]["Enums"]["complaint_priority"]
           resolution_image_url?: string | null
           resolution_notes?: string | null
           resolved_at?: string | null
@@ -164,6 +243,7 @@ export type Database = {
           email: string | null
           full_name: string
           id: string
+          is_active: boolean
           phone: string | null
           updated_at: string
         }
@@ -174,6 +254,7 @@ export type Database = {
           email?: string | null
           full_name?: string
           id: string
+          is_active?: boolean
           phone?: string | null
           updated_at?: string
         }
@@ -184,6 +265,7 @@ export type Database = {
           email?: string | null
           full_name?: string
           id?: string
+          is_active?: boolean
           phone?: string | null
           updated_at?: string
         }
@@ -223,6 +305,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_completion_decision: {
+        Args: { _approve: boolean; _complaint_id: string; _note?: string }
+        Returns: undefined
+      }
+      admin_reopen_complaint: {
+        Args: { _complaint_id: string; _note: string }
+        Returns: undefined
+      }
       can_view_complaint: { Args: { _complaint_id: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -232,6 +322,38 @@ export type Database = {
         Returns: boolean
       }
       my_department: { Args: never; Returns: string }
+      track_lookup: {
+        Args: { _code: string }
+        Returns: {
+          category: Database["public"]["Enums"]["complaint_category"]
+          code: string
+          created_at: string
+          department_name: string
+          priority: Database["public"]["Enums"]["complaint_priority"]
+          resolution_notes: string
+          resolved_at: string
+          status: Database["public"]["Enums"]["complaint_status"]
+          title: string
+          updated_at: string
+        }[]
+      }
+      track_timeline: {
+        Args: { _code: string }
+        Returns: {
+          created_at: string
+          note: string
+          to_status: Database["public"]["Enums"]["complaint_status"]
+        }[]
+      }
+      worker_task_action: {
+        Args: {
+          _action: string
+          _complaint_id: string
+          _image_url?: string
+          _note?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "citizen" | "staff" | "admin"
@@ -244,7 +366,16 @@ export type Database = {
         | "traffic"
         | "safety"
         | "other"
-      complaint_status: "pending" | "in_progress" | "completed" | "rejected"
+      complaint_priority: "low" | "medium" | "high" | "urgent"
+      complaint_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "rejected"
+        | "under_review"
+        | "approved"
+        | "assigned"
+        | "pending_verification"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -383,7 +514,17 @@ export const Constants = {
         "safety",
         "other",
       ],
-      complaint_status: ["pending", "in_progress", "completed", "rejected"],
+      complaint_priority: ["low", "medium", "high", "urgent"],
+      complaint_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "rejected",
+        "under_review",
+        "approved",
+        "assigned",
+        "pending_verification",
+      ],
     },
   },
 } as const
