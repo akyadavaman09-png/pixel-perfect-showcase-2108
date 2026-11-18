@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as TrackRouteImport } from './routes/track'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDepartmentsRouteImport } from './routes/_authenticated/departments'
@@ -22,6 +24,7 @@ import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as AuthenticatedWorkerRouteImport } from './routes/_authenticated/worker'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
 import { Route as AuthenticatedAdminCrewsRouteImport } from './routes/_authenticated/admin/crews'
@@ -41,6 +44,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -94,6 +107,11 @@ const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWorkerRoute = AuthenticatedWorkerRouteImport.update({
+  id: '/worker',
+  path: '/worker',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -131,6 +149,8 @@ const AuthenticatedComplaintsIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/login': typeof LoginRoute
+  '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/departments': typeof AuthenticatedDepartmentsRoute
@@ -141,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/users': typeof AuthenticatedUsersRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/worker': typeof AuthenticatedWorkerRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/crews': typeof AuthenticatedAdminCrewsRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
@@ -151,6 +172,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/login': typeof LoginRoute
+  '/track': typeof TrackRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/departments': typeof AuthenticatedDepartmentsRoute
   '/map': typeof AuthenticatedMapRoute
@@ -160,6 +183,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/users': typeof AuthenticatedUsersRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/worker': typeof AuthenticatedWorkerRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/crews': typeof AuthenticatedAdminCrewsRoute
   '/admin/queue': typeof AuthenticatedAdminQueueRoute
@@ -172,6 +196,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/login': typeof LoginRoute
+  '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/departments': typeof AuthenticatedDepartmentsRoute
@@ -182,6 +208,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/_authenticated/worker': typeof AuthenticatedWorkerRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/crews': typeof AuthenticatedAdminCrewsRoute
   '/_authenticated/admin/queue': typeof AuthenticatedAdminQueueRoute
@@ -194,6 +221,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/login'
+    | '/track'
     | '/admin'
     | '/dashboard'
     | '/departments'
@@ -204,6 +233,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/users'
     | '/verify'
+    | '/worker'
     | '/admin/analytics'
     | '/admin/crews'
     | '/admin/queue'
@@ -214,6 +244,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/login'
+    | '/track'
     | '/dashboard'
     | '/departments'
     | '/map'
@@ -223,6 +255,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/users'
     | '/verify'
+    | '/worker'
     | '/admin/analytics'
     | '/admin/crews'
     | '/admin/queue'
@@ -234,6 +267,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/login'
+    | '/track'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/departments'
@@ -244,6 +279,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/users'
     | '/_authenticated/verify'
+    | '/_authenticated/worker'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/crews'
     | '/_authenticated/admin/queue'
@@ -256,6 +292,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LoginRoute: typeof LoginRoute
+  TrackRoute: typeof TrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -279,6 +317,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -349,6 +401,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/worker': {
+      id: '/_authenticated/worker'
+      path: '/worker'
+      fullPath: '/worker'
+      preLoaderRoute: typeof AuthenticatedWorkerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/': {
@@ -427,6 +486,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
+  AuthenticatedWorkerRoute: typeof AuthenticatedWorkerRoute
   AuthenticatedComplaintsIdRoute: typeof AuthenticatedComplaintsIdRoute
   AuthenticatedComplaintsIndexRoute: typeof AuthenticatedComplaintsIndexRoute
 }
@@ -442,6 +502,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
+  AuthenticatedWorkerRoute: AuthenticatedWorkerRoute,
   AuthenticatedComplaintsIdRoute: AuthenticatedComplaintsIdRoute,
   AuthenticatedComplaintsIndexRoute: AuthenticatedComplaintsIndexRoute,
 }
@@ -453,6 +514,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LoginRoute: LoginRoute,
+  TrackRoute: TrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

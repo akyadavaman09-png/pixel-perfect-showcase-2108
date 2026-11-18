@@ -33,9 +33,7 @@ const NAV: Record<string, NavItem[]> = {
     { to: "/profile", label: "Profile", icon: UserIcon },
   ],
   staff: [
-    { to: "/admin", label: "Admin Console", icon: ShieldCheck },
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/complaints", label: "Assigned Complaints", icon: ListChecks },
+    { to: "/worker", label: "My Tasks", icon: ListChecks },
     { to: "/map", label: "City Map", icon: MapIcon },
     { to: "/profile", label: "Profile", icon: UserIcon },
   ],
@@ -54,7 +52,7 @@ const NAV: Record<string, NavItem[]> = {
 
 const roleLabel: Record<string, string> = {
   citizen: "Citizen",
-  staff: "Department Staff",
+  staff: "Field Worker",
   admin: "Administrator",
 };
 

@@ -1,5 +1,22 @@
 export type AppRole = "citizen" | "staff" | "admin";
-export type ComplaintStatus = "pending" | "in_progress" | "completed" | "rejected";
+export type ComplaintStatus =
+  | "pending"
+  | "under_review"
+  | "approved"
+  | "assigned"
+  | "in_progress"
+  | "pending_verification"
+  | "completed"
+  | "rejected";
+export type ComplaintPriority = "low" | "medium" | "high" | "urgent";
+export const PRIORITIES: { value: ComplaintPriority; label: string }[] = [
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+  { value: "urgent", label: "Urgent" },
+];
+export const isOverdue = (c: { due_date?: string | null; status: string }) =>
+  !!c.due_date && !["completed", "rejected"].includes(c.status) && new Date(c.due_date) < new Date();
 export type ComplaintCategory =
   | "pothole"
   | "garbage"
@@ -25,9 +42,13 @@ export const categoryLabel = (value?: string | null) =>
   CATEGORIES.find((c) => c.value === value)?.label ?? "Unknown";
 
 export const STATUSES: { value: ComplaintStatus; label: string }[] = [
-  { value: "pending", label: "Pending" },
+  { value: "pending", label: "Submitted" },
+  { value: "under_review", label: "Under Review" },
+  { value: "approved", label: "Approved" },
+  { value: "assigned", label: "Assigned" },
   { value: "in_progress", label: "In Progress" },
-  { value: "completed", label: "Resolved" },
+  { value: "pending_verification", label: "Pending Verification" },
+  { value: "completed", label: "Completed" },
   { value: "rejected", label: "Rejected" },
 ];
 
@@ -37,12 +58,16 @@ export const statusLabel = (value?: string | null) =>
 /* Marker colors are read from the design tokens at runtime. */
 export const STATUS_TOKEN: Record<ComplaintStatus, string> = {
   pending: "--destructive",
+  under_review: "--info",
+  approved: "--info",
+  assigned: "--info",
   in_progress: "--warning",
+  pending_verification: "--accent",
   completed: "--success",
   rejected: "--muted-foreground",
 };
 
-export const STATUS_STEPS: ComplaintStatus[] = ["pending", "in_progress", "completed"];
+export const STATUS_STEPS: ComplaintStatus[] = ["pending", "under_review", "approved", "assigned", "in_progress", "pending_verification", "completed"];
 
 export interface Complaint {
   id: string;
@@ -59,6 +84,8 @@ export interface Complaint {
   ward: string | null;
   assigned_staff_id: string | null;
   status: ComplaintStatus;
+  priority: ComplaintPriority;
+  due_date: string | null;
   admin_notes: string | null;
   resolution_notes: string | null;
   resolution_image_url: string | null;
@@ -81,6 +108,7 @@ export interface Profile {
   phone: string | null;
   address: string | null;
   department_id: string | null;
+  is_active: boolean;
   created_at: string;
 }
 
@@ -92,6 +120,7 @@ export interface ComplaintUpdate {
   to_status: ComplaintStatus | null;
   note: string | null;
   image_url: string | null;
+  visibility: string;
   created_at: string;
 }
 

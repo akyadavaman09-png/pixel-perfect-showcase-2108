@@ -24,7 +24,8 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { session, loading } = useAuth();
+  const { session, loading, role } = useAuth();
+  const home = role === "admin" ? "/admin" : role === "staff" ? "/worker" : "/dashboard";
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,8 +33,8 @@ function AuthPage() {
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    if (!loading && session) void navigate({ to: "/dashboard", replace: true });
-  }, [loading, session, navigate]);
+    if (!loading && session && role) void navigate({ to: home, replace: true });
+  }, [loading, session, role, home, navigate]);
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +42,6 @@ function AuthPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) toast.error(error.message);
-    else navigate({ to: "/dashboard", replace: true });
   };
 
   const signUp = async (e: React.FormEvent) => {

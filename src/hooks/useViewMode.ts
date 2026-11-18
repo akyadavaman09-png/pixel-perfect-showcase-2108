@@ -31,7 +31,7 @@ export function useViewMode() {
     read,
     () => null,
   );
-  const canUseAdmin = role === "admin" || role === "staff";
+  const canUseAdmin = role === "admin";
   const mode: ViewMode = canUseAdmin ? (stored ?? "admin") : "citizen";
   return { mode, canUseAdmin, setViewMode };
 }

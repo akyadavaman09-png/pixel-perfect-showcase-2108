@@ -73,7 +73,10 @@ function ReportPage() {
       if (error) throw error;
 
       await qc.invalidateQueries({ queryKey: ["complaints"] });
-      toast.success(`Complaint ${data.code} submitted`);
+      toast.success(`Submitted! Your tracking code is ${data.code}`, {
+        description: "Save it — anyone can check progress at /track with this code.",
+        duration: 15000,
+      });
       navigate({ to: "/complaints/$id", params: { id: data.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not submit the complaint");

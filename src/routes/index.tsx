@@ -80,7 +80,7 @@ function Landing() {
               <Link to={session ? "/report" : "/auth"}>Report an issue</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to={session ? "/complaints" : "/auth"}>Track a complaint</Link>
+              <Link to="/track">Track a complaint</Link>
             </Button>
           </div>
         </section>

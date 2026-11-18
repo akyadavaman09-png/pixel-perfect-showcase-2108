@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { CheckCircle2, ClipboardList, Clock, FilePlus2, ListChecks, XCircle } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { StatCard } from "@/components/StatCard";
@@ -26,6 +26,7 @@ function Dashboard() {
   const { data: complaints = [], isLoading } = useComplaints();
   const departments = useDepartmentMap();
 
+  if (role === "staff") return <Navigate to="/worker" />;
   const count = (s: string) => complaints.filter((c) => c.status === s).length;
   const recent = complaints.slice(0, 6);
 

@@ -7,6 +7,7 @@ import { useViewMode, type ViewMode } from "@/hooks/useViewMode";
 export function ViewSwitcher() {
   const { mode, canUseAdmin, setViewMode } = useViewMode();
   const navigate = useNavigate();
+  if (!canUseAdmin) return null;
 
   const change = (v: string) => {
     if (!v || (v === "admin" && !canUseAdmin)) return;
@@ -42,7 +43,7 @@ export function ViewSwitcher() {
             </span>
           </TooltipTrigger>
           {!canUseAdmin ? (
-            <TooltipContent>Requires an admin or department staff account</TooltipContent>
+            <TooltipContent>Requires an administrator account</TooltipContent>
           ) : null}
         </Tooltip>
       </ToggleGroup>
