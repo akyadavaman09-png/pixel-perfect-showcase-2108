@@ -5,6 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useComplaints, useDepartmentMap } from "@/lib/queries";
 import { useStaff } from "@/lib/adminActions";
+import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin/crews")({
   head: () => ({
@@ -24,6 +28,14 @@ function CrewsPage() {
   const { data: staff = [], isLoading } = useStaff();
   const { data: complaints = [] } = useComplaints();
   const depts = useDepartmentMap();
+  const qc = useQueryClient();
+  const toggle = async (id: string, next: boolean) => {
+    if (!confirm(next ? "Reactivate this worker?" : "Deactivate this worker? They won't receive new tasks.")) return;
+    const { error } = await supabase.from("profiles").update({ is_active: next }).eq("id", id);
+    if (error) return void toast.error(error.message);
+    toast.success(next ? "Worker reactivated" : "Worker deactivated");
+    void qc.invalidateQueries({ queryKey: ["staff_members"] });
+  };
 
   return (
     <Card className="overflow-hidden p-0">
@@ -34,13 +46,15 @@ function CrewsPage() {
             <TableHead>Department</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>Active jobs</TableHead>
-            <TableHead>Resolved</TableHead>
+            <TableHead>Pending</TableHead>
+            <TableHead>Completed</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {staff.map((s) => {
             const mine = complaints.filter((c) => c.assigned_staff_id === s.id);
-            const active = mine.filter((c) => c.status === "pending" || c.status === "in_progress").length;
+            const active = mine.filter((c) => !["completed", "rejected"].includes(c.status)).length;
             return (
               <TableRow key={s.id}>
                 <TableCell>
@@ -54,14 +68,20 @@ function CrewsPage() {
                 <TableCell>
                   <Badge variant={active ? "default" : "secondary"}>{active}</Badge>
                 </TableCell>
+                <TableCell>{mine.filter((c) => c.status === "pending_verification").length}</TableCell>
                 <TableCell>{mine.filter((c) => c.status === "completed").length}</TableCell>
+                <TableCell>
+                  <Button size="sm" variant={s.is_active ? "outline" : "default"} onClick={() => void toggle(s.id, !s.is_active)}>
+                    {s.is_active ? "Deactivate" : "Activate"}
+                  </Button>
+                </TableCell>
               </TableRow>
             );
           })}
           {!staff.length ? (
             <TableRow>
-              <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
-                {isLoading ? "Loading crews…" : "No field staff yet. Assign the Staff role on the Users page."}
+              <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                {isLoading ? "Loading crews…" : "No field staff yet. Give someone the Field Worker role on the Users page."}
               </TableCell>
             </TableRow>
           ) : null}

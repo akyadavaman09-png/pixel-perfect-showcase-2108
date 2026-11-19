@@ -31,7 +31,7 @@ function Dashboard() {
   const recent = complaints.slice(0, 6);
 
   const heading =
-    role === "admin" ? "City overview" : role === "staff" ? "Department overview" : "Your overview";
+    role === "admin" ? "City overview" : "Your overview";
 
   return (
     <AppShell

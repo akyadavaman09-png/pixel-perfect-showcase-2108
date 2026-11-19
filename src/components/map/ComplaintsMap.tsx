@@ -12,6 +12,10 @@ import {
 
 const colors: Record<ComplaintStatus, string> = {
   pending: "oklch(0.58 0.208 27)",
+  under_review: "oklch(0.62 0.12 245)",
+  approved: "oklch(0.62 0.12 245)",
+  assigned: "oklch(0.62 0.12 245)",
+  pending_verification: "oklch(0.68 0.115 205)",
   in_progress: "oklch(0.72 0.16 62)",
   completed: "oklch(0.6 0.135 152)",
   rejected: "oklch(0.62 0.02 256)",

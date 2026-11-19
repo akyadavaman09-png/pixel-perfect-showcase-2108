@@ -98,7 +98,7 @@ function UsersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="citizen">Citizen</SelectItem>
-                <SelectItem value="staff">Department Staff</SelectItem>
+                <SelectItem value="staff">Field Worker</SelectItem>
                 <SelectItem value="admin">Administrator</SelectItem>
               </SelectContent>
             </Select>

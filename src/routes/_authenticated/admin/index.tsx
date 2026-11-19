@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useComplaints, useDepartmentMap } from "@/lib/queries";
-import { categoryLabel } from "@/lib/smartcity";
+import { categoryLabel, isOverdue } from "@/lib/smartcity";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
@@ -26,9 +26,12 @@ function Overview() {
   const count = (s: string) => data.filter((c) => c.status === s).length;
   const stats = [
     { label: "Total complaints", value: data.length, icon: ListChecks },
-    { label: "Pending", value: count("pending"), icon: AlertCircle },
-    { label: "In progress", value: count("in_progress"), icon: Clock },
-    { label: "Resolved", value: count("completed"), icon: CheckCircle2 },
+    { label: "New, awaiting review", value: count("pending") + count("under_review"), icon: AlertCircle },
+    { label: "Approved, unassigned", value: data.filter((c) => c.status === "approved" && !c.assigned_staff_id).length, icon: AlertCircle },
+    { label: "Work in progress", value: count("assigned") + count("in_progress") + count("pending_verification"), icon: Clock },
+    { label: "Completed", value: count("completed"), icon: CheckCircle2 },
+    { label: "Rejected", value: count("rejected"), icon: ListChecks },
+    { label: "Overdue", value: data.filter(isOverdue).length, icon: AlertCircle },
   ];
   const unassigned = data.filter((c) => !c.assigned_staff_id && c.status !== "completed" && c.status !== "rejected");
 

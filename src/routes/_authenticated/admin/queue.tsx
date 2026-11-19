@@ -26,8 +26,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useComplaints, useDepartmentMap } from "@/lib/queries";
-import { useAssignStaff, useStaff, useUpdateStatus } from "@/lib/adminActions";
-import { categoryLabel, type Complaint, type ComplaintStatus } from "@/lib/smartcity";
+import { useAdminPatch, useAssignStaff, useCompletionDecision, useStaff, useUpdateStatus } from "@/lib/adminActions";
+import { PRIORITIES, categoryLabel, formatDate, isOverdue, type Complaint, type ComplaintStatus } from "@/lib/smartcity";
 
 export const Route = createFileRoute("/_authenticated/admin/queue")({
   head: () => ({
@@ -44,9 +44,8 @@ export const Route = createFileRoute("/_authenticated/admin/queue")({
 });
 
 const STATUS_ACTIONS: { value: ComplaintStatus; label: string }[] = [
-  { value: "pending", label: "Pending" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "completed", label: "Resolved" },
+  { value: "under_review", label: "Mark Under Review" },
+  { value: "approved", label: "Approve" },
 ];
 
 function QueuePage() {
@@ -55,6 +54,9 @@ function QueuePage() {
   const { data: staff = [] } = useStaff();
   const updateStatus = useUpdateStatus();
   const assign = useAssignStaff();
+  const patch = useAdminPatch();
+  const decide = useCompletionDecision();
+  const ask = (msg: string) => window.prompt(msg)?.trim();
   const [tab, setTab] = useState<"all" | ComplaintStatus>("all");
   const [q, setQ] = useState("");
   const [assignFor, setAssignFor] = useState<Complaint | null>(null);
@@ -87,9 +89,12 @@ function QueuePage() {
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="pending">New</TabsTrigger>
+            <TabsTrigger value="approved">Approved</TabsTrigger>
             <TabsTrigger value="in_progress">In Progress</TabsTrigger>
-            <TabsTrigger value="completed">Resolved</TabsTrigger>
+            <TabsTrigger value="pending_verification">To Verify</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="rejected">Rejected</TabsTrigger>
           </TabsList>
         </Tabs>
         <div className="relative ml-auto w-full sm:w-72">
@@ -106,6 +111,7 @@ function QueuePage() {
               <TableHead>Category</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Ward</TableHead>
+              <TableHead>Priority / Due</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Assigned Department</TableHead>
               <TableHead className="w-12 text-right">Action</TableHead>
@@ -118,6 +124,12 @@ function QueuePage() {
                 <TableCell>{categoryLabel(c.category)}</TableCell>
                 <TableCell className="max-w-56 truncate">{c.location_text || "—"}</TableCell>
                 <TableCell>{c.ward || "—"}</TableCell>
+                <TableCell className="text-xs">
+                  <div className="capitalize">{c.priority}</div>
+                  <div className={isOverdue(c) ? "font-semibold text-destructive" : "text-muted-foreground"}>
+                    {c.due_date ? `${isOverdue(c) ? "Overdue · " : ""}${formatDate(c.due_date)}` : "No due date"}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <StatusBadge status={c.status} />
                 </TableCell>
@@ -145,6 +157,47 @@ function QueuePage() {
                           {s.label}
                         </DropdownMenuItem>
                       ))}
+                      {["pending", "under_review"].includes(c.status) ? (
+                        <DropdownMenuItem onSelect={() => {
+                          const r = ask(`Reason for rejecting ${c.code}?`);
+                          if (r) updateStatus.mutate({ complaint: c, to: "rejected", note: r });
+                        }}>Reject…</DropdownMenuItem>
+                      ) : null}
+                      {c.status === "pending_verification" ? (
+                        <>
+                          <DropdownMenuItem onSelect={() => confirm(`Verify ${c.code} as Completed?`) && decide.mutate({ complaint: c, approve: true })}>
+                            Verify completion
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => {
+                            const r = ask("Why is the work being returned?");
+                            if (r) decide.mutate({ complaint: c, approve: false, note: r });
+                          }}>Return to worker…</DropdownMenuItem>
+                        </>
+                      ) : null}
+                      {c.status === "completed" ? (
+                        <DropdownMenuItem onSelect={() => {
+                          const r = ask(`Reason for reopening ${c.code}?`);
+                          if (r) decide.mutate({ complaint: c, approve: false, reopen: true, note: r });
+                        }}>Reopen…</DropdownMenuItem>
+                      ) : null}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>Priority</DropdownMenuLabel>
+                      {PRIORITIES.map((p) => (
+                        <DropdownMenuItem key={p.value} disabled={c.priority === p.value}
+                          onSelect={() => patch.mutate({ complaint: c, patch: { priority: p.value }, note: `Priority set to ${p.label}` })}>
+                          {p.label}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuItem onSelect={() => {
+                        const d = ask("Due date (YYYY-MM-DD), empty to clear");
+                        if (d === undefined) return;
+                        if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return void alert("Use YYYY-MM-DD");
+                        patch.mutate({ complaint: c, patch: { due_date: d ? new Date(d).toISOString() : null }, note: d ? `Due date set to ${d}` : "Due date cleared" });
+                      }}>Set due date…</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => {
+                        const n = ask("Instructions / internal note for the worker");
+                        if (n) patch.mutate({ complaint: c, patch: { admin_notes: n }, note: "Admin instructions updated" });
+                      }}>Add instructions…</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onSelect={() => {
@@ -166,7 +219,7 @@ function QueuePage() {
             ))}
             {!rows.length ? (
               <TableRow>
-                <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
                   {isLoading ? "Loading complaints…" : "No complaints match these filters."}
                 </TableCell>
               </TableRow>
@@ -191,7 +244,7 @@ function QueuePage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Unassigned</SelectItem>
-                {candidates.map((s) => (
+                {candidates.filter((s) => s.is_active).map((s) => (
                   <SelectItem key={s.id} value={s.id}>
                     {s.full_name || s.email} {s.department_id ? `· ${depts[s.department_id] ?? ""}` : ""}
                   </SelectItem>

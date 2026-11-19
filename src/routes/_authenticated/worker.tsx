@@ -62,7 +62,7 @@ function TaskCard({ c }: { c: Complaint }) {
       let img: string | null = null;
       if (file && user) img = await uploadComplaintPhoto(file, user.id, action === "complete" ? "resolution" : "progress");
       const { error } = await supabase.rpc("worker_task_action", {
-        _complaint_id: c.id, _action: action, _note: note || undefined, _image_url: img ?? undefined,
+        _complaint_id: c.id, _action: action, ...(note ? { _note: note } : {}), ...(img ? { _image_url: img } : {}),
       });
       if (error) throw error;
       if (img && user)
